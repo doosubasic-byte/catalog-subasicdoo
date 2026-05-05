@@ -212,7 +212,10 @@ function render() {
 
   filtered = items
     .filter(x => x && x.sifra && x.naziv)
-    .filter(x => (x.aktivno || "").toUpperCase() !== "NE")
+    .filter(x => {
+      const a = String(x.aktivno ?? "").trim().toUpperCase();
+      return a === "" || a === "DA";
+    })
     .filter(x => !g || x.grupa === g)
     .filter(x => !term || (`${x.naziv} ${x.sifra}`).toLowerCase().includes(term))
     .sort((a, b) => Number(a.redoslijed || 0) - Number(b.redoslijed || 0));
@@ -287,7 +290,10 @@ fetch(jsonUrl + "?nocache=" + Date.now())
   .then(data => {
 
     items = data
-      .filter(x => String(x.aktivno || "").toUpperCase() === "DA") // 👉 SAMO AKTIVNI
+      .filter(x => {
+        const a = String(x.aktivno ?? "").trim().toUpperCase();
+        return a === "" || a === "DA";
+      })
       .map(r => ({
         sifra: r.sifra,
         naziv: r.naziv,
